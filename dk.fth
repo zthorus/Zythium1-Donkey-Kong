@@ -4,6 +4,7 @@
 
   Date          Action
   ----          ------
+  2021-12-03    Call to "pause" word from do-loop ok: zth1f corrected
   2021-12-02    First release on GitHub
 ) 
 
@@ -29,8 +30,6 @@ data mLBottom $487468686868687c48747868ccccccee487478cccc85874248747868ccccccee
 data mRBottom $122e16161616163e122e1e1633333377122e1e222241e142122e1e1633333377 
 data mOnLadTop $3c3cbc98fefe7e7e3c3c3d197f7f7e7e
 data mOnLadBottom $7e7e6666666060607e7e666666060606
- ( data barrelSide $00000000183c3c18
-data barrelFront $000000003c7e7e3c )
 data barrelSide $0000001c3e3e3e1c
 data barrelFront $0000007effffff7e
 
@@ -68,8 +67,8 @@ data barMem2    $0006000a000e00120000000000000000
   0 2 at ." cf" 1 2 at ." dg" 2 2 at ." eh" 
   $0900 $1873 ! 0 6 at ." m" $0400 $1873 ! 1 6 at ." n"  
   $0900 $1873 ! 2 6 at ." bb"
-  $0200 $1873 ! 13 0 at ." o" $0300 $1873 ! 14 0 at ." p"  
-  0 18 at ." 0" 0 23 at ." 3" 
+  $0200 $1873 ! 13 0 at ." o" $0307 $1873 ! 14 0 at ." p"  
+  $0300 $1873 ! 0 18 at ." 0" 0 23 at ." 3" 
 ;
 
 : pause
@@ -428,22 +427,22 @@ data barMem2    $0006000a000e00120000000000000000
         ( death flashing )
         ( known compiler bug: cannot call a word containing a do-loop
           from inside a do-loop )
-        20 0 do
+        30 0 do
           $ff80 $1800 !
-          10000 0 do i loop   
+          pause   
           $0080 $1800 !
-          10000 0 do i loop   
+          pause   
         loop
         lives @ 1- lives !
         $0300 $1873 ! 0 23 at lives @ .
         ( wait for player to release joystick )
       else
         ( win ! )
-        20 0 do
+        30 0 do
           $ff80 $1801 ! $ff80 $1802 !
-          10000 0 do i loop   
+          pause    
           $0080 $1801 ! $0080 $1802 !
-          10000 0 do i loop   
+          pause   
         loop
         score @ 1000 + score !
         $0300 $1873 ! 0 18 at score @ .
