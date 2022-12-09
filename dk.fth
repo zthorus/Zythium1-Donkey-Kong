@@ -4,6 +4,7 @@
 
   Date          Action
   ----          ------
+  2022-12-08    Used constants [now allowed by zth1f]
   2021-12-03    Call to "pause" word from do-loop ok: zth1f corrected
   2021-12-02    First release on GitHub
 ) 
@@ -46,15 +47,20 @@ data yBarrelEnds  $0000000000000000
 data barMem     $00300060003000800010003000500070
 data barMem2    $0006000a000e00120000000000000000
 
+constant textColors $1873
+constant bkgndColor_R $1800
+constant bkgndColor_G $1801
+constant bkgndColor_B $1802
+constant spriteCollision $1824
+
 : drawStage1
   var xLad var yLad
-  ( set colors by addressing sys-var $1873 )
-  $0a00 $1873 !
+  $0a00 textColors !
   6 6 at
   3 0 do
     i 4 * 3 + 0 at ." aaaaaaaaaaaaaaaaaaaaaaa" 
   loop
-  $0b00 $1873 !
+  $0b00 textColors !
   3 0 do
     ladderLevels i + @ yLad !
     xLadders i + @ xLad !
@@ -63,12 +69,12 @@ data barMem2    $0006000a000e00120000000000000000
       yLad @ 1- yLad !
     loop
   loop 
-  $0600 $1873 !
+  $0600 textColors !
   0 2 at ." cf" 1 2 at ." dg" 2 2 at ." eh" 
-  $0900 $1873 ! 0 6 at ." m" $0400 $1873 ! 1 6 at ." n"  
-  $0900 $1873 ! 2 6 at ." bb"
-  $0200 $1873 ! 13 0 at ." o" $0307 $1873 ! 14 0 at ." p"  
-  $0300 $1873 ! 0 18 at ." 0" 0 23 at ." 3" 
+  $0900 textColors ! 0 6 at ." m" $0400 textColors ! 1 6 at ." n"  
+  $0900 textColors ! 2 6 at ." bb"
+  $0200 textColors ! 13 0 at ." o" $0307 textColors ! 14 0 at ." p"  
+  $0300 textColors ! 0 18 at ." 0" 0 23 at ." 3" 
 ;
 
 : pause
@@ -109,7 +115,7 @@ data barMem2    $0006000a000e00120000000000000000
 
     0 score !
     3 lives !
-    $0700 $1873 ! cls drawStage1
+    $0700 textColors ! cls drawStage1
 
     begin
 
@@ -378,8 +384,8 @@ data barMem2    $0006000a000e00120000000000000000
             30 xBar ! 16 yBar !
             6 barLevel !
             10 score @ + score !
-            $0300 $1873 ! 0 18 at score @ .
-            $0600 $1873 ! 0 2 at ." ik" 1 2 at ." jl"
+            $0300 textColors ! 0 18 at score @ .
+            $0600 textColors ! 0 2 at ." ik" 1 2 at ." jl"
             50 kongThrow !
           then
           yBar @ xBar @ spriteNum @ putsprite
@@ -398,23 +404,23 @@ data barMem2    $0006000a000e00120000000000000000
         then
         kongThrow @ 1
         if=
-          $0600 $1873 ! 0 2 at ." cf" 1 2 at ." dg"
+          $0600 textColors ! 0 2 at ." cf" 1 2 at ." dg"
           0 kongThrow !
         then
         fireph @ 1+ firePh !
         firePh @ 7 and 0
         if=
-          $0200 $1873 ! 13 0 at ." o"
+          $0200 textColors ! 13 0 at ." o"
         then
         firePh @ 7 and 4 
         if=
-          $0200 $1873 ! 13 0 at ." q"
+          $0200 textColors ! 13 0 at ." q"
         then
         
         pause
   
         ( check if Mario has been hit by a barrel )
-        $1824 @ 0
+        spriteCollision @ 0
         if!= 1 bailout !  then 
         ( check if Mario reached the top )
         ym @ 8 = xm @ 70 = and
@@ -422,30 +428,30 @@ data barMem2    $0006000a000e00120000000000000000
         bailout @ 
       until
        
-      $1824 @ 0
+      spriteCollision @ 0
       if!=
         ( death flashing )
         ( known compiler bug: cannot call a word containing a do-loop
           from inside a do-loop )
         30 0 do
-          $ff80 $1800 !
+          $ff80 bkgndColor_R !
           pause   
-          $0080 $1800 !
+          $0080 bkgndColor_R !
           pause   
         loop
         lives @ 1- lives !
-        $0300 $1873 ! 0 23 at lives @ .
+        $0300 textColors ! 0 23 at lives @ .
         ( wait for player to release joystick )
       else
         ( win ! )
         30 0 do
-          $ff80 $1801 ! $ff80 $1802 !
+          $ff80 bkgndColor_G ! $ff80 bkgndColor_B !
           pause    
-          $0080 $1801 ! $0080 $1802 !
+          $0080 bkgndColor_G ! $0080 bkgndColor_B !
           pause   
         loop
         score @ 1000 + score !
-        $0300 $1873 ! 0 18 at score @ .
+        $0300 textColors ! 0 18 at score @ .
       then
       ( wait for player to release joystick )
       begin
@@ -455,7 +461,7 @@ data barMem2    $0006000a000e00120000000000000000
       lives @ 0
     until=
 
-    $0300 $1873 5 7 at ." GAME-OVER"
+    $0300 textColors 5 7 at ." GAME-OVER"
     begin
       joystick 15
     until!=
